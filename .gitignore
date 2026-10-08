@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+.env*.local
+.env
+next-env.d.ts
+*.tsbuildinfo
+temporary screenshots/
+
+# Source material kept out of the repo. The site uses the copies in public/.
+/Brand assets/
+/*.jpg
+/*.jpeg
+/*.png
+/*.txt

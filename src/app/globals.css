@@ -1,0 +1,292 @@
+@import "tailwindcss";
+
+/* KBTS brand guideline v1.0: Mirage, Deep Sea Green, Wild Sand, Blaze Orange */
+@theme {
+  --color-mirage: #16232a; /* logo, headings, text, dark layouts */
+  --color-mirage-700: #22343d;
+  --color-sea: #075056; /* brand blocks, icons, highlights */
+  --color-sea-600: #0b6870;
+  --color-sea-100: #cfe2e4;
+  --color-sand: #e4eef0; /* backgrounds */
+  --color-sand-50: #f3f8f9;
+  --color-blaze: #ff5b04; /* calls to action */
+  --color-blaze-600: #e24e00;
+  --color-ink: #16232a;
+  --color-muted: #4a5a62;
+  --color-line: #d9e4e7;
+  --color-success: #0b7a43;
+
+  /* shadcn semantic names, mapped onto the KBTS palette */
+  --color-background: #fff;
+  --color-foreground: #16232a;
+  --color-primary: #ff5b04;
+  --color-primary-foreground: #16232a;
+  --color-secondary: #e4eef0;
+  --color-secondary-foreground: #16232a;
+  --color-accent: #f3f8f9;
+  --color-accent-foreground: #075056;
+  --color-destructive: #b42318;
+  --color-destructive-foreground: #fff;
+  --color-muted-foreground: #4a5a62;
+  --color-input: #d9e4e7;
+  --color-ring: #ff5b04;
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plex), "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --shadow-raised: 0 1px 2px rgb(22 35 42 / 0.05), 0 8px 24px -10px rgb(7 80 86 / 0.18);
+  --shadow-float: 0 2px 6px rgb(22 35 42 / 0.07), 0 24px 48px -16px rgb(7 80 86 / 0.3);
+  --shadow-cta: 0 1px 0 rgb(255 255 255 / 0.3) inset, 0 8px 20px -8px rgb(255 91 4 / 0.6);
+
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* Aurora background (src/components/ui/aurora-background.tsx) */
+  --animate-aurora: aurora 60s linear infinite;
+  @keyframes aurora {
+    from {
+      background-position: 50% 50%, 50% 50%;
+    }
+    to {
+      background-position: 350% 50%, 350% 50%;
+    }
+  }
+}
+
+/* Plain colour variables the aurora gradients reference */
+:root {
+  --white: #fff;
+  --black: #000;
+  --transparent: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01";
+  color: var(--color-ink);
+  background: #fff;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* Language switch: <T> renders both, the inactive one is hidden */
+html:not([data-lang="sw"]) [data-l="sw"],
+html[data-lang="sw"] [data-l="en"] {
+  display: none !important;
+}
+
+::selection {
+  color: var(--color-ink);
+  background: rgb(255 218 121 / 0.5);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-blaze);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Bevelled corners used on the stats banner and CTA band */
+.bevel-banner {
+  clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+}
+.bevel-top {
+  clip-path: polygon(48px 0, calc(100% - 48px) 0, 100% 48px, 100% 100%, 0 100%, 0 48px);
+}
+
+/* Pressable: spring lift on hover, settle on press. Transform only. */
+.press {
+  transition: transform 220ms var(--ease-spring);
+}
+.press:hover {
+  transform: translateY(-2px);
+}
+.press:active {
+  transform: translateY(0) scale(0.97);
+}
+.nudge svg {
+  transition: transform 220ms var(--ease-spring);
+}
+.nudge:hover svg {
+  transform: translateX(3px);
+}
+
+/* Hero entrance + rotating words (src/components/ui/animated-hero.tsx).
+   CSS-only so it runs on first paint, before any JavaScript loads. */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+@keyframes hero-media {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+.hero-rise {
+  animation: hero-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms) both;
+}
+.hero-media {
+  animation: hero-media 900ms cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms) both;
+}
+.hero-word {
+  transition:
+    transform 800ms cubic-bezier(0.34, 1.4, 0.64, 1),
+    opacity 350ms ease;
+}
+.hero-word[data-state="current"] {
+  transform: translateY(0);
+  opacity: 1;
+}
+.hero-word[data-state="past"] {
+  transform: translateY(-110%);
+  opacity: 0;
+}
+.hero-word[data-state="next"] {
+  transform: translateY(110%);
+  opacity: 0;
+}
+
+/* Phone chat pop-up (src/components/PhoneChat.tsx). Motion values follow
+   React Bits FolderFloat: 520ms spring rise, bounce 0.3, staggered entries.
+   Hidden state only applies once JS has mounted, so content never disappears
+   without it. Transform and opacity only. */
+.chat-pop {
+  --pop-open: 520ms;
+  --pop-close: 312ms;
+  --pop-stagger: 420ms;
+  --pop-spring: cubic-bezier(0.34, 1.57, 0.64, 1);
+  --pop-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+.chat-pop[data-ready] .chat-pop__item {
+  opacity: 0;
+  transform: translateY(44px) rotate(var(--tilt)) scale(0.6);
+  transform-origin: var(--origin);
+  transition:
+    transform var(--pop-close) var(--pop-ease-out),
+    opacity 160ms ease;
+}
+.chat-pop[data-ready][data-open] .chat-pop__item {
+  opacity: 1;
+  transform: translateY(0) rotate(0deg) scale(1);
+  transition:
+    transform var(--pop-open) var(--pop-spring) calc(var(--i) * var(--pop-stagger)),
+    opacity 160ms ease calc(var(--i) * var(--pop-stagger));
+}
+
+/* Plan cards (Plans section): spring up in turn, then checklist lines tick in.
+   Hover lift uses the separate `translate` property so it never fights the
+   entrance `transform`. */
+.pop-group {
+  --card-spring: cubic-bezier(0.34, 1.45, 0.64, 1);
+  --card-stagger: 160ms;
+}
+.pop-card {
+  transition: translate 320ms var(--ease-spring);
+}
+@media (hover: hover) and (pointer: fine) {
+  .pop-card:hover {
+    translate: 0 -6px;
+  }
+}
+.pop-group[data-ready] .pop-card {
+  opacity: 0;
+  transform: translateY(64px) scale(0.92) rotate(var(--tilt, 0deg));
+  transition:
+    transform 320ms cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 180ms ease,
+    translate 320ms var(--ease-spring);
+}
+.pop-group[data-ready][data-open] .pop-card {
+  opacity: 1;
+  transform: none;
+  transition:
+    transform 760ms var(--card-spring) calc(var(--i) * var(--card-stagger)),
+    opacity 220ms ease calc(var(--i) * var(--card-stagger)),
+    translate 320ms var(--ease-spring);
+}
+.pop-group[data-ready] .pop-line {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.pop-group[data-ready][data-open] .pop-line {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 260ms ease calc(var(--i) * var(--card-stagger) + 420ms + var(--j) * 70ms),
+    transform 420ms var(--card-spring) calc(var(--i) * var(--card-stagger) + 420ms + var(--j) * 70ms);
+}
+
+/* Icon tilts with a spring when its card is hovered */
+.icon-spring {
+  transition: transform 420ms var(--ease-spring);
+}
+@media (hover: hover) and (pointer: fine) {
+  .group:hover .icon-spring {
+    transform: rotate(-8deg) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop-card:hover {
+    translate: none;
+  }
+  .icon-spring,
+  .group:hover .icon-spring {
+    transition: none;
+    transform: none;
+  }
+  .pop-group[data-ready] .pop-card,
+  .pop-group[data-ready][data-open] .pop-card,
+  .pop-group[data-ready] .pop-line,
+  .pop-group[data-ready][data-open] .pop-line {
+    transform: none;
+    transition: opacity 240ms ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-pop[data-ready] .chat-pop__item,
+  .chat-pop[data-ready][data-open] .chat-pop__item {
+    transform: none;
+    transition: opacity 200ms ease calc(var(--i) * 120ms);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise,
+  .hero-media {
+    animation: none;
+  }
+  .hero-word {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .press,
+  .nudge svg {
+    transition: none;
+  }
+  .press:hover,
+  .press:active,
+  .nudge:hover svg {
+    transform: none;
+  }
+}
