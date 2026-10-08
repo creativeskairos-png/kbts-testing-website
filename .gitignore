@@ -1,8 +1,14 @@
 node_modules/
 .next/
 out/
-.env*.local
-.env
+# Secrets: every .env file except the blank template
+.env*
+!.env.example
+*.pem
+*.key
+*.p12
+id_rsa*
+.vercel/
 next-env.d.ts
 *.tsbuildinfo
 temporary screenshots/
